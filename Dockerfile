@@ -1,10 +1,7 @@
-FROM apache/airflow:latest
+FROM apache/airflow:3.3.2
 
-ENV _AIRFLOW_WWW_USER_CREATE_USERNAME=admin
-ENV _AIRFLOW_WWW_USER_CREATE_PASSWORD=admin
-ENV _AIRFLOW_WWW_USER_CREATE_EMAIL=admin@example.com
-ENV _AIRFLOW_WWW_USER_CREATE_FIRSTNAME=Airflow
-ENV _AIRFLOW_WWW_USER_CREATE_LASTNAME=Admin
+# Admin credentials are supplied at runtime (see .env.example), never baked into the image.
+ENV AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
 
 # Copy the DAG script to the DAGs folder in the container
 COPY airflow_dag_task.py /opt/airflow/dags/

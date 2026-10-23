@@ -1,7 +1,8 @@
+import os
 import warnings
 from datetime import datetime
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.python import PythonOperator
 import psycopg2
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -14,10 +15,10 @@ def print_time_only(**kwargs):
 
     # Connect to the PostgreSQL server
     conn = psycopg2.connect(
-        host="localhost",
-        database="afdagtasktimedb",
-        user="postgres",
-        password="postgres"
+        host=os.environ.get("POSTGRES_HOST", "localhost"),
+        database=os.environ.get("POSTGRES_DB", "afdagtasktimedb"),
+        user=os.environ.get("POSTGRES_USER", "postgres"),
+        password=os.environ["POSTGRES_PASSWORD"],
     )
 
     # Create a cursor object
@@ -43,12 +44,11 @@ default_args = {
 dag = DAG(
     dag_id='my_simple_dag',
     default_args=default_args,
-    schedule_interval='*/1 * * * *',  # Run every minute
+    schedule='*/1 * * * *',  # Run every minute
 )
 
 task = PythonOperator(
     task_id='print_time_only',
     python_callable=print_time_only,
-    provide_context=True,
     dag=dag,
 )
