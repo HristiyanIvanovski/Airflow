@@ -14,4 +14,6 @@ COPY entrypoint.sh /entrypoint.sh
 USER root
 RUN chmod +x /entrypoint.sh && chown airflow: /entrypoint.sh
 USER airflow
+# Bundled certifi/pip/uv in the 3.3.2 image still trust the compromised emSign CA (GHSA-6q48-6c7w-9gw2, GHSA-hq85-5cpj-mr62)
+RUN pip install --no-cache-dir "apache-airflow==3.3.2" "certifi>=2026.10.19" "pip>=26.2.2" "uv>=0.13.4"
 ENTRYPOINT ["/entrypoint.sh"]
